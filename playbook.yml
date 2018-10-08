@@ -7,6 +7,14 @@
    - name: test connection
      ping:
 
+   - name: add REMI repository 
+     yum:
+       name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+       state: present
+       
+   - name: enable remi-php72
+     command: "yum-config-manager --enable remi-php72"
+     
    - name: install packages
      yum:
        name: "{{item}}"
@@ -14,8 +22,19 @@
      with_items:
        - mc
        - nano
-       - iptables-services        
-        
+       - iptables-services
+       - yum-utils
+       - httpd
+       - php
+       - php-mysql
+       - mariadb
+       - mariadb-server
+       - unzip
+       - php-gd
+       - php-pecl-imagick
+       - php-pecl-zip
+       - php-xml
+       
    - name: disable firewalld service on system start up
      systemd:
        name: firewalld
@@ -25,6 +44,14 @@
      systemd:
        name: firewalld
        state: stopped
+   
+   - name: copy iptables
+     copy:
+       src: files/iptables
+       dest: /etc/sysconfig/iptables
+       owner: root
+       group: root
+       mode: 0644
 
    - name: enable services on system start up
      systemd:
@@ -33,6 +60,8 @@
      with_items:
        - iptables
        - ip6tables
+       - httpd
+       - mariadb
 
    - name: start services
      systemd:
@@ -41,6 +70,16 @@
      with_items:
        - iptables
        - ip6tables
+       - httpd
+       - mariadb
+   - name: Download cs-cart
+     get_url:
+       url: http://helpdesk.cs-cart.com/index.php?dispatch=download.download&file_id=1402&ekey=4f454e863a36c05f8a41c1b42bea3b5c&msgid=15389917530000000975;0;0&x-email=gsaburov@list.ru&js=1
+       dest: /var/www/html/cscart_v4.8.2.SP2.zip
        
+   - name: Unarchive a file that is already on the remote machine
+     unarchive:
+       src: /var/www/html/cscart_v4.8.2.SP2.zip
+       dest: /var/www/html/
 
 
