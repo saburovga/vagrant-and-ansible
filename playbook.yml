@@ -1,0 +1,46 @@
+---
+- hosts: default
+  connection: local
+  become: yes
+  
+  tasks:
+   - name: test connection
+     ping:
+
+   - name: install packages
+     yum:
+       name: "{{item}}"
+       state: present
+     with_items:
+       - mc
+       - nano
+       - iptables-services        
+        
+   - name: disable firewalld service on system start up
+     systemd:
+       name: firewalld
+       enabled: no
+
+   - name: stop firewalld service
+     systemd:
+       name: firewalld
+       state: stopped
+
+   - name: enable services on system start up
+     systemd:
+       name: "{{item}}"
+       enabled: yes
+     with_items:
+       - iptables
+       - ip6tables
+
+   - name: start services
+     systemd:
+       name: "{{item}}"
+       state: started
+     with_items:
+       - iptables
+       - ip6tables
+       
+
+
