@@ -24,16 +24,18 @@
        - nano
        - iptables-services
        - yum-utils
+       - nginx
        - httpd
        - php
        - php-mysql
-       - mariadb
-       - mariadb-server
-       - unzip
        - php-gd
        - php-pecl-imagick
        - php-pecl-zip
        - php-xml
+       - mariadb
+       - mariadb-server
+       - unzip
+
        
    - name: disable firewalld service on system start up
      systemd:
@@ -44,15 +46,22 @@
      systemd:
        name: firewalld
        state: stopped
-   
-   - name: copy iptables
+
+   - name: copy configuration files
      copy:
-       src: files/iptables
-       dest: /etc/sysconfig/iptables
+       src: "{{item.src}}"
+       dest: "{{item.dest}}"
        owner: root
        group: root
        mode: 0644
-
+     with_items:
+       - {src: 'files/iptables', dest: '/etc/sysconfig/iptables'}
+       - {src: 'files/httpd.conf', dest: '/etc/httpd/conf/httpd.conf'}
+       - {src: 'files/nginx.conf', dest: '/etc/nginx/nginx.conf'}
+       - {src: 'files/nginx-proxy.conf', dest: '/etc/nginx/conf.d/default.conf'}
+     notify:
+       - restart services on config update
+    
    - name: enable services on system start up
      systemd:
        name: "{{item}}"
@@ -62,6 +71,7 @@
        - ip6tables
        - httpd
        - mariadb
+       - nginx
 
    - name: start services
      systemd:
@@ -72,6 +82,8 @@
        - ip6tables
        - httpd
        - mariadb
+       - nginx
+       
    - name: Download cs-cart
      get_url:
        url: http://helpdesk.cs-cart.com/index.php?dispatch=download.download&file_id=1402&ekey=4f454e863a36c05f8a41c1b42bea3b5c&msgid=15389917530000000975;0;0&x-email=gsaburov@list.ru&js=1
@@ -82,4 +94,13 @@
        src: /var/www/html/cscart_v4.8.2.SP2.zip
        dest: /var/www/html/
 
-
+  handlers:
+    - name: restart services on config update
+      systemd:
+        name: "{{item}}"
+        state: restarted
+      with_items:
+        - iptables
+        - ip6tables
+        - httpd
+        - nginx
