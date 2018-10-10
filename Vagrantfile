@@ -13,7 +13,6 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "bento/centos-7.5"
-
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -24,7 +23,7 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-
+  #config.vm.network "forwarded_port", guest: 80, host: 8888
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
@@ -32,7 +31,7 @@ Vagrant.configure("2") do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  #config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -58,7 +57,8 @@ Vagrant.configure("2") do |config|
    end
    config.vm.provision "ansible_local" do |ansible|
 	ansible.playbook = "playbook.yml"
-	ansible.install_mode = "default"	
+	ansible.install_mode = "default"
+    ansible.compatibility_mode = "2.0"	
    end
   #
   # View the documentation for the provider you are using for more
