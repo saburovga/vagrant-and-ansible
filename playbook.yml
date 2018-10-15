@@ -51,7 +51,7 @@
 
    - name: Download cs-cart
      get_url:
-       url: https://drive.google.com/uc?export=download&confirm=XwQp&id=1oOEGR1MtQcPgKRRsc4BjQJW3Hr-trvgO
+       url: https://www.dropbox.com/s/ysbyf85g1qtkwch/cscart_v4.8.2.SP2.zip?dl=1
        dest: /var/www/html/cscart_v4.8.2.SP2.zip
        
    - name: Unarchive a file that is already on the remote machine
